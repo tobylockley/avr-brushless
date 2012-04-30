@@ -1,0 +1,6 @@
+avr-brushless
+=============
+
+Brushless speed controller using avr-gcc
+
+Aim is to have an easy to understand, easy to customize brushless esc using an Atmega8 MCU.
