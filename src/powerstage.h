@@ -1,15 +1,12 @@
-#ifndef POWERSTAGE_H
-#define POWERSTAGE_H
-
-#include <avr/interrupt.h>
-#include "chipselect.h"
-
-extern volatile uint8_t pwm_pin_select;
-extern volatile uint8_t comm_state;
+#ifndef _POWERSTAGE_H_
+#define _POWERSTAGE_H_
 
 void powerstage_init(void);
 void commutate_motor(void);
 void set_pwm(uint8_t newval);
+
+extern volatile uint8_t pwm_pin_select;
+extern volatile uint8_t comm_state;
 
 #define PWM_BOTTOM			155 //Range reduced to 255-155 = 100, but frequency increased to 20KHz
 #define PWM_RANGE			(255 - PWM_BOTTOM)
@@ -56,6 +53,12 @@ void set_pwm(uint8_t newval);
 #define CL_DDR		DDRD
 #define CL_PORT		PORTD
 #define CL			5
+
+
+/************** BACK-EMF INPUTS **************/
+#define ADC_A	0x01
+#define ADC_B	0x02
+#define ADC_C	0x03
 					
 
 /************** MOSFET PIN STATES **************/
@@ -131,4 +134,4 @@ void set_pwm(uint8_t newval);
 					  BL_OFF(), \
 					  CL_OFF()  )
 
-#endif //#ifndef POWERSTAGE_H
+#endif /* _POWERSTAGE_H_ */

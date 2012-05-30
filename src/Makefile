@@ -34,7 +34,7 @@ TARGET = main
 SRC = $(TARGET).c
 SRC += powerstage.c
 SRC += tones.c
-SRC += usart.c
+SRC += uart.c
 
 # Programming hardware
 # Type: avrdude -c ?

@@ -1,7 +1,8 @@
-#ifndef CHIPSELECT_M328P_H
-#define CHIPSELECT_M328P_H
+#ifndef _CHIPSELECT_M328P_H_
+#define _CHIPSELECT_M328P_H_
 
 /************** USART **************/
+//redefine usart registers to conform with atmega8 names
 #define UDR UDR0
 
 #define UBRRH UBRR0H
@@ -29,14 +30,8 @@
 #define PWM_OFF()			( TCCR2B &= ~PWM_PRESCL )
 
 
-/************** BACK-EMF INPUTS **************/
-#define ADC_A	0x01
-#define ADC_B	0x02
-#define ADC_C	0x03
-
-
 /************** TIMER0 **************/
 #define TIMER0_OFF()		( TCCR0B &= ((1 << CS02) | (1 << CS01) | (1 << CS00)) )
 #define TIMER0_ON_P64()		( TIMER0_OFF(), TCCR0B |= (1 << CS01) | (1 << CS00) )
 
-#endif //#ifndef CHIPSELECT_M328P_H
+#endif /* _CHIPSELECT_M328P_H_ */

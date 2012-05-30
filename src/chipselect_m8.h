@@ -1,60 +1,22 @@
-/* 
- * breadboard-esc, an open-source Brushless DC motor controller
- * Copyright (C) 2011 Toby Lockley <tobylockley@gmail.com>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
+#ifndef _CHIPSELECT_M8_H_
+#define _CHIPSELECT_M8_H_
 
-#ifndef __PINDEFS_M8_H__
-#define __PINDEFS_M8_H__ 1
+//TODO
 
-//===================================//
-//        ESC PIN DEFINITIONS        //
-//===================================//
-//Consult microcontroller data sheet before adjusting values
-//NOTE: Macro definitions conform to AVR naming conventions.
-//	DDR  - Data Direction Register
-//	PORT - I/O port name
-//	PIN  - Port IN; current state of the I/O port
+/************** PWM **************/
+/*#define PWM_INIT()			( TIMSK2 = (1 << OCIE2A) | (1 << TOIE2), \
+							  TCCR2A = (1 << WGM21)  | (1 << WGM20)  ) //Enable interrupts, Fast PWM mode
+#define PWM_COMP_vect 		TIMER2_COMPA_vect //output compare interrupt vector
+#define PWM_OVF_vect 		TIMER2_OVF_vect    //overflow interrupt vector
+#define PWM_COMP_REG		OCR2A
+#define PWM_COUNT_REG		TCNT2
+#define PWM_PRESCL			(1 << CS21) //clk/8
+#define PWM_ON()			( TCCR2B |= PWM_PRESCL )
+#define PWM_OFF()			( TCCR2B &= ~PWM_PRESCL )*/
 
-//---------OUTPUTS----------//
-//Note: PINx is used on low side to determine pwm current state
-//Channel A
-#define HIGH_A_DDR		DDRD
-#define HIGH_A_PORT		PORTD
-#define HIGH_A			3
 
-#define LOW_A_DDR		DDRD
-#define LOW_A_PORT		PORTD
-#define LOW_A			4
+/************** TIMER0 **************/
+/*#define TIMER0_OFF()		( TCCR0B &= ((1 << CS02) | (1 << CS01) | (1 << CS00)) )
+#define TIMER0_ON_P64()		( TIMER0_OFF(), TCCR0B |= (1 << CS01) | (1 << CS00) )*/
 
-//Channel B
-#define HIGH_B_DDR		DDRD
-#define HIGH_B_PORT		PORTD
-#define HIGH_B			5
-
-#define LOW_B_DDR		DDRB
-#define LOW_B_PORT		PORTB
-#define LOW_B			2
-
-//Channel C
-#define HIGH_C_DDR		DDRD
-#define HIGH_C_PORT		PORTD
-#define HIGH_C			7
-
-#define LOW_C_DDR		DDRB
-#define LOW_C_PORT		PORTB
-#define LOW_C			0
-
-#endif //#ifndef __PINDEFS_M8_H__
+#endif /* _CHIPSELECT_M8_H_ */

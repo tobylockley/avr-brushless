@@ -1,3 +1,5 @@
+#include <avr/interrupt.h>
+#include "chipselect.h"
 #include "powerstage.h"
 
 volatile uint8_t pwm_pin_select;

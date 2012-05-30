@@ -1,3 +1,5 @@
+#include "chipselect.h"
+#include "powerstage.h"
 #include "tones.h"
 
 void tone(uint8_t wait, uint8_t loops)

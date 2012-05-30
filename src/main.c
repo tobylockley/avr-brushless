@@ -4,7 +4,7 @@
 #include "chipselect.h"
 #include "powerstage.h"
 #include "tones.h"
-#include "usart.h"
+#include "uart.h"
 
 int main(void)
 {	
@@ -14,7 +14,7 @@ int main(void)
 	MCUSR = 0;
 	
 	powerstage_init();
-	usart_init();
+	uart_init();
 	    
 	sei(); //Enable global interrupts
 	

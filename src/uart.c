@@ -1,4 +1,7 @@
-#include "usart.h"
+#include <string.h>
+#include <avr/interrupt.h>
+#include "chipselect.h"
+#include "uart.h"
 
 #define UBRR_VAL ((F_CPU / 16 / BAUD_RATE) - 1)
 
@@ -21,7 +24,7 @@ ISR(USART_TX_vect)
     }
 }
 
-void usart_init(void)
+void uart_init(void)
 {
     UCSRB |= (1 << TXEN) | (1 << TXCIE);
     UBRRH = (UBRR_VAL >> 8);
@@ -32,7 +35,7 @@ void usart_init(void)
     tx_idle = 1;
 }
 
-void usart_putchar(char c)
+void uart_putchar(char c)
 {
 	if (tx_idle) {
 		//If tx is idle, bypass the buffer
@@ -49,7 +52,7 @@ void usart_putchar(char c)
 	}
 }
 
-void usart_putstr(char* s)
+void uart_putstr(char* s)
 {
     uint8_t i;
     if ((strlen(s) <= buf_space) && (strlen(s) > 0))
@@ -74,9 +77,9 @@ void usart_putstr(char* s)
     }
 }
 
-void usart_putint(int n)
+void uart_putint(int n)
 {
-	// Converts an int to a string and put in usart buffer
+	// Converts an int to a string and put in uart buffer
     if (buf_space >= 9)
     {
 		char temp[6], s[9];
@@ -104,6 +107,6 @@ void usart_putint(int n)
 		s[j++] = '\n';
 		s[j++] = '\r';
 	
-		usart_putstr(s);
+		uart_putstr(s);
 	}
 }

@@ -1,0 +1,168 @@
+
+    char strVal[20];
+	uint8_t i, j, vals[SAMPLES], timer[SAMPLES], avg[6];
+	uint16_t tally;
+	
+	DDRB |= (1 << PB1);
+	if (MCUSR & (1 << PORF)) PORTB |= 1 << PB1;
+	MCUSR = 0;
+	//init_timers();
+	init_powerstage();
+	
+	//----
+    UCSR0B = (1 << TXEN0);
+    UBRR0H = (BAUD_PRESCL >> 8);
+    UBRR0L = BAUD_PRESCL;
+    
+    ADMUX = (1<<ADLAR) | (1<<REFS0);
+    ADCSRA = (1<<ADPS2) | (1<<ADPS1); //prescl 64 (250KHz)
+    ADCSRA |= (1<<ADEN) | (1<<ADSC) | (1<<ADATE);
+    
+    //TCCR0B = (1 << CS02) | (0 << CS00); //4ms/16ms
+    //----
+    
+	//sei(); //Enable global interrupts
+	
+	//set_pwm(50);
+	//_delay_ms(100);
+	
+	//STEP 1
+	tally=0;
+	ADMUX |= ADC_C;
+	AH_ON();
+	BL_ON();
+	_delay_us(100);
+	ADCSRA |= 1<<ADIF;
+	//TCNT0 = 0;
+	for (i=0; i<SAMPLES; i++) {
+		while (!(ADCSRA & (1 << ADIF)));
+		//vals[i] = ADCH;
+		//timer[i] = TCNT0;
+		tally += ADCH;
+		ADCSRA |= 1<<ADIF;
+	}
+	POWER_OFF();
+	avg[0] = tally / SAMPLES;
+	
+	//STEP 2
+	tally=0;
+	ADMUX &= ~ADC_C;
+	ADMUX |= ADC_A;
+	CH_ON();
+	BL_ON();
+	_delay_us(100);
+	ADCSRA |= 1<<ADIF;
+	//TCNT0 = 0;
+	for (i=0; i<SAMPLES; i++) {
+		while (!(ADCSRA & (1 << ADIF)));
+		//vals[i] = ADCH;
+		//timer[i] = TCNT0;
+		tally += ADCH;
+		ADCSRA |= 1<<ADIF;
+	}
+	POWER_OFF();
+	avg[1] = tally / SAMPLES;
+	
+	//STEP 3
+	tally=0;
+	ADMUX &= ~ADC_A;
+	ADMUX |= ADC_B;
+	CH_ON();
+	AL_ON();
+	_delay_us(100);
+	ADCSRA |= 1<<ADIF;
+	//TCNT0 = 0;
+	for (i=0; i<SAMPLES; i++) {
+		while (!(ADCSRA & (1 << ADIF)));
+		//vals[i] = ADCH;
+		//timer[i] = TCNT0;
+		tally += ADCH;
+		ADCSRA |= 1<<ADIF;
+	}
+	POWER_OFF();
+	avg[2] = tally / SAMPLES;
+	
+	//STEP 4
+	tally=0;
+	ADMUX &= ~ADC_B;
+	ADMUX |= ADC_C;
+	BH_ON();
+	AL_ON();
+	_delay_us(100);
+	ADCSRA |= 1<<ADIF;
+	//TCNT0 = 0;
+	for (i=0; i<SAMPLES; i++) {
+		while (!(ADCSRA & (1 << ADIF)));
+		//vals[i] = ADCH;
+		//timer[i] = TCNT0;
+		tally += ADCH;
+		ADCSRA |= 1<<ADIF;
+	}
+	POWER_OFF();
+	avg[3] = tally / SAMPLES;
+	
+	//STEP 5
+	tally=0;
+	ADMUX &= ~ADC_C;
+	ADMUX |= ADC_A;
+	BH_ON();
+	CL_ON();
+	_delay_us(100);
+	ADCSRA |= 1<<ADIF;
+	//TCNT0 = 0;
+	for (i=0; i<SAMPLES; i++) {
+		while (!(ADCSRA & (1 << ADIF)));
+		//vals[i] = ADCH;
+		//timer[i] = TCNT0;
+		tally += ADCH;
+		ADCSRA |= 1<<ADIF;
+	}
+	POWER_OFF();
+	avg[4] = tally / SAMPLES;
+	
+	//STEP 6
+	tally=0;
+	ADMUX &= ~ADC_A;
+	ADMUX |= ADC_B;
+	AH_ON();
+	CL_ON();
+	_delay_us(100);
+	ADCSRA |= 1<<ADIF;
+	//TCNT0 = 0;
+	for (i=0; i<SAMPLES; i++) {
+		while (!(ADCSRA & (1 << ADIF)));
+		//vals[i] = ADCH;
+		//timer[i] = TCNT0;
+		tally += ADCH;
+		ADCSRA |= 1<<ADIF;
+	}
+	POWER_OFF();
+	avg[5] = tally / SAMPLES;
+	
+	
+	
+	/*for (j=0; j<SAMPLES; j++) {
+		sprintf(strVal, "%d %d : ", j+1, vals[j]);
+		for (i=0; i<strlen(strVal); i++) {
+		    while (!(UCSR0A & (1 << UDRE0)));
+		    UDR0 = strVal[i];
+		}
+		sprintf(strVal, "%d\n\r", timer[j]*16);
+		for (i=0; i<strlen(strVal); i++) {
+		    while (!(UCSR0A & (1 << UDRE0)));
+		    UDR0 = strVal[i];
+		}
+	}*/
+	
+	for (j=0; j<6; j++) {
+		sprintf(strVal, "state %d: %d\n\r", j+1, avg[j]);
+		for (i=0; i<strlen(strVal); i++) {
+		    while (!(UCSR0A & (1 << UDRE0)));
+		    UDR0 = strVal[i];
+		}
+	}
+		sprintf(strVal, "\n\r");
+		for (i=0; i<strlen(strVal); i++) {
+		    while (!(UCSR0A & (1 << UDRE0)));
+		    UDR0 = strVal[i];
+		}
