@@ -4,9 +4,7 @@
 void powerstage_init(void);
 void commutate_motor(void);
 void set_pwm(uint8_t newval);
-
-extern volatile uint8_t pwm_pin_select;
-extern volatile uint8_t comm_state;
+void pwm_pinselect(uint8_t pin);
 
 #define PWM_BOTTOM			155 //Range reduced to 255-155 = 100, but frequency increased to 20KHz
 #define PWM_RANGE			(255 - PWM_BOTTOM)
@@ -25,7 +23,7 @@ extern volatile uint8_t comm_state;
 //	PORT - I/O port name
 
 //---------OUTPUTS----------//
-#define LOWSIDE_PORT	PORTD
+#define LOWSIDE_PORT PORTD
 
 //Channel A
 #define AH_DDR		DDRD

@@ -1,5 +1,6 @@
 # git will ignore these files
 .dep/
+docs/
 *.eep
 *.elf
 *.hex
@@ -8,4 +9,5 @@
 *.map
 *.o
 *.sym
+*.geany
 *~

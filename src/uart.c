@@ -3,12 +3,13 @@
 #include "chipselect.h"
 #include "uart.h"
 
-#define UBRR_VAL ((F_CPU / 16 / BAUD_RATE) - 1)
+#define UBRR_VAL	((F_CPU / 16 / BAUD_RATE) - 1)
+#define TX_IDLE()	( UCSRA & (1 << UDRE) ) //non zero when data can be written to uart
 
 volatile char outbuf[OUTBUFSIZE];
-volatile uint8_t buf_head, buf_tail, buf_space, tx_idle;
+volatile uint8_t buf_head, buf_tail, buf_space;
 
-ISR(USART_TX_vect)
+ISR(USART_UDRE_vect)
 {
     if (buf_space < OUTBUFSIZE)
     {
@@ -18,28 +19,22 @@ ISR(USART_TX_vect)
         buf_head %= OUTBUFSIZE;
     	++buf_space;
     }
-    else {
-    	//buffer is empty
-    	tx_idle = 1;
-    }
 }
 
 void uart_init(void)
 {
-    UCSRB |= (1 << TXEN) | (1 << TXCIE);
+    UCSRB |= (1 << TXEN) | (1 << UDRIE);
     UBRRH = (UBRR_VAL >> 8);
     UBRRL = UBRR_VAL;
     buf_head = 0;
     buf_tail = 0;
     buf_space = OUTBUFSIZE;
-    tx_idle = 1;
 }
 
 void uart_putchar(char c)
 {
-	if (tx_idle) {
+	if (TX_IDLE()) {
 		//If tx is idle, bypass the buffer
-    	tx_idle = 0;
         UDR = c;
 	}
 	else {
@@ -58,18 +53,17 @@ void uart_putstr(char* s)
     if ((strlen(s) <= buf_space) && (strlen(s) > 0))
     {
     	i = 0;
-        while (s[i] != 0) //read everything until the null char
+        while (s[i]) //read everything until the null char
         {
 		    outbuf[buf_tail++] = s[i]; //add to buffer
 		    buf_tail %= OUTBUFSIZE; //circular buffer, wraps around to 0
 		    --buf_space;
             i++; //next char
         }
-        if (tx_idle)
+        if (TX_IDLE())
         {
             //if tx is idle, kick start transmission
-            //the TX complete interrupt will continue reading the buffer
-			tx_idle = 0;
+            //the UDRE interrupt will continue reading the buffer
 		    UDR = outbuf[buf_head++];
 		    buf_head %= OUTBUFSIZE;
 			++buf_space;

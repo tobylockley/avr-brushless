@@ -2,19 +2,42 @@
 #include "chipselect.h"
 #include "powerstage.h"
 
-volatile uint8_t pwm_pin_select;
+volatile uint8_t pwm_pin_mask;
 volatile uint8_t comm_state;
 
-ISR(PWM_COMP_vect)
+ISR(PWM_COMP_vect, ISR_NAKED)
 {
 	AL_OFF();
 	BL_OFF();
 	CL_OFF();
+	reti();
 }
 
 ISR(PWM_OVF_vect)
 {
-	LOWSIDE_PORT |= (1 << pwm_pin_select);
+	//LOWSIDE_PORT |= pwm_pin_mask;
+	switch (pwm_pin_mask) {
+	case (1 << AL):
+		AL_ON();
+		break;
+	case (1 << BL):
+		BL_ON();
+		break;
+	case (1 << CL):
+		CL_ON();
+		break;
+	}
+	/*switch (pwm_pin_select) {
+	case AL:
+		AL_ON();
+		break;
+	case BL:
+		BL_ON();
+		break;
+	case CL:
+		CL_ON();
+		break;
+	}*/
 	PWM_COUNT_REG = PWM_BOTTOM;
 }
 
@@ -48,6 +71,15 @@ void set_pwm(uint8_t newval)
 		if (newval > PWM_RANGE) newval = PWM_RANGE; //clip value to permitted range
 		if (PWM_COMP_REG == 0) PWM_ON();
 		PWM_COMP_REG = PWM_BOTTOM + newval;
+	}
+}
+
+void pwm_pinselect(uint8_t pin)
+{
+	//Public funtion to change PWM current pin
+	//Must be on the LOWSIDE_PORT declared in the header
+	if (pin == AL || pin == BL || pin == CL) {
+		pwm_pin_mask = (1 << pin);
 	}
 }
 
@@ -89,7 +121,7 @@ void commutate_motor(void)
 		}*/
 		//If mosfet was off, then the new phase will be activated on the next pwm interrupt,
 		//	no need to do anything extra
-		pwm_pin_select = BL; //Set pwm to lowside B
+		pwm_pinselect(BL); //Set pwm to lowside B
 		break;
 	case 2:
 		//ADMUX = ADC_A;
@@ -106,7 +138,7 @@ void commutate_motor(void)
 		}*/
 		//If mosfet was off, then the new phase will be activated on the next pwm interrupt,
 		//	no need to do anything extra
-		pwm_pin_select = AL; //Set pwm to lowside A
+		pwm_pinselect(AL); //Set pwm to lowside A
 	  	break;
 	case 4:
 		//ADMUX = ADC_C;
@@ -123,7 +155,7 @@ void commutate_motor(void)
 		}*/
 		//If mosfet was off, then the new phase will be activated on the next pwm interrupt,
 		//	no need to do anything extra
-		pwm_pin_select = CL; //Set pwm lowside C
+		pwm_pinselect(CL); //Set pwm lowside C
 	  	break;
 	case 6:
 		//ADMUX = ADC_B;

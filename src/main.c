@@ -18,12 +18,13 @@ int main(void)
 	    
 	sei(); //Enable global interrupts
 	
+	tone_high(); //Tone to signify end of initialisation
+	tone_med();
+	tone_low();
 	//set_pwm(6);
 	
-	tone_low();
-	tone_med();
-	tone_high();
-	
 	while(1) {
+		//PORTB ^= 1<<PB1;
+		//delay_us(2000);
 	}
 }

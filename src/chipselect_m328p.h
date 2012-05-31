@@ -14,6 +14,7 @@
 #define UCSRB UCSR0B
 	#define TXEN	TXEN0
 	#define RXEN	RXEN0
+	#define UDRIE	UDRIE0
 	#define TXCIE	TXCIE0
 	#define RXCIE	RXCIE0
 
