@@ -1,6 +1,7 @@
 # git will ignore these files
 .dep/
 docs/
+obj/
 *.eep
 *.elf
 *.hex
